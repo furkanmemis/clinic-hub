@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: clinic-hub:latest
+    ports:
+      - "8080:8080"   # Go uygulamanın çalıştığı port
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/fuzei  # MongoDB bağlantı stringi
+    volumes:
+      - app-data:/app/data
+
+  mongodb:
+    image: mongo:6.0
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+  app-data:
