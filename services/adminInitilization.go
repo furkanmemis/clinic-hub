@@ -1,12 +1,12 @@
 package services
 
 import (
+	"clinic-hub/database"
+	"clinic-hub/models"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"clinic-hub/database"
-	"clinic-hub/models"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"

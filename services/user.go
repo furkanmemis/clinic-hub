@@ -1,12 +1,12 @@
 package services
 
 import (
+	"clinic-hub/database"
+	"clinic-hub/models"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"clinic-hub/database"
-	"clinic-hub/models"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,8 +27,8 @@ func GetUserById(id string) models.User {
 	return models.User{}
 }
 
-func CreateUser(databaseName string, user models.User) string {
-	collection := database.Connection(databaseName, "user")
+func CreateUser(tenantId string, user models.User) string {
+	collection := database.Connection(tenantId, "user")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
@@ -38,6 +38,7 @@ func CreateUser(databaseName string, user models.User) string {
 	hash := sha256.Sum256(data)
 	user.Password = hex.EncodeToString(hash[:])
 	user.Role = "user"
+	user.TenantId = tenantId
 
 	result, err := collection.InsertOne(ctx, user)
 	if err != nil {

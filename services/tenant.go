@@ -1,12 +1,12 @@
 package services
 
 import (
+	"clinic-hub/database"
+	"clinic-hub/models"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"clinic-hub/database"
-	"clinic-hub/models"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,19 +51,20 @@ func CreateTenant(tenant models.Tenant, password string) string {
 			Surname:  tenant.AdminName,
 			Email:    tenant.AdminEmail,
 			Password: hex.EncodeToString(hash[:]),
-			Role:     "admin",
+			Role:     "manager",
 			TenantId: newUuid,
 		}
 
 		newTenantUser := models.TenantUser{
 			Email:    tenant.AdminEmail,
 			Password: hex.EncodeToString(hash[:]),
-			Role:     "admin",
+			Role:     "manager",
 			TenantId: newUuid,
 		}
 
 		collectionUser.InsertOne(ctx, newAdmin)
 		collectionTenantUser.InsertOne(ctx, newTenantUser)
+		RoleInitilization(newUuid)
 
 		return "Tenant created: " + tenant.Name
 

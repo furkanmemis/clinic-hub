@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
 	"clinic-hub/controller"
+	middleware "clinic-hub/middlewares"
 	"clinic-hub/models"
+	"encoding/json"
 	"net/http"
 	"strings"
 )
@@ -41,9 +42,18 @@ func GetUserByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 
-	var user models.User
+	user, ok := r.Context().Value(middleware.UserKey).(map[string]string)
+	if !ok || user == nil {
+		http.Error(w, "User not found in context", http.StatusUnauthorized)
+		return
+	}
 
-	err := json.NewDecoder(r.Body).Decode(&user)
+	//email := user["email"]
+	tenantID := user["tenantId"]
+
+	var userModel models.User
+
+	err := json.NewDecoder(r.Body).Decode(&userModel)
 
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -52,7 +62,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	msg := controller.CreateUser(user)
+	msg := controller.CreateUser(userModel, tenantID)
 
 	rsp := map[string]interface{}{
 		"message": "Success",
