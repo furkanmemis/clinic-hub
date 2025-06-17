@@ -24,14 +24,22 @@ func main() {
 
 	fmt.Println("Tenant routes:")
 	for route, handleFunc := range handler.TenantHandlerMap {
+		wrapped := middleware.JWTMiddleware(http.HandlerFunc(handleFunc))
+		http.Handle(route, wrapped)
 		fmt.Printf("%s created.\n", route)
-		http.HandleFunc(route, handleFunc)
 	}
 	fmt.Println("User routes:")
 	for route, handleFunc := range handler.UserHandlerMap {
 		wrapped := middleware.JWTMiddleware(http.HandlerFunc(handleFunc))
 		http.Handle(route, wrapped)
 		fmt.Printf("%s created.\n", route)
+	}
+
+	fmt.Println("Department routes: ")
+	for route, handleFunc := range handler.DeparmentHandler {
+		wrapped := middleware.JWTMiddleware(http.HandlerFunc(handleFunc))
+		http.Handle(route, wrapped)
+		fmt.Printf("%s created\n", route)
 	}
 
 	fmt.Println("Server running with 8080")
