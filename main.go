@@ -19,7 +19,7 @@ func main() {
 	fmt.Println("Authentication routes:")
 	for route, handleFunc := range handler.AuthenticationHandlerMap {
 		fmt.Printf("%s created.\n", route)
-		http.HandleFunc(route, handleFunc)
+		http.Handle(route, middleware.EnableCORS(http.HandlerFunc(handleFunc)))
 	}
 
 	fmt.Println("Tenant routes:")
