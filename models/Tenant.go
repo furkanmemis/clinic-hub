@@ -11,9 +11,16 @@ type Tenant struct {
 	AdminName    string             `bson:"adminName" json:"adminName"`
 	AdminSurname string             `bson:"adminSurname" json:"adminSurname"`
 	AdminEmail   string             `bson:"adminEmail" json:"adminEmail"`
+	Address      string             `bson:"address" json:"address"`
+	Phone        string             `bson:"phone" json:"phone"`
 }
 
 type TenantRequest struct {
-	TenantInformation Tenant `json:"tenantInformation"`
-	AdminPassword     string `json:"adminPassword"`
+	Name          string `bson:"name" json:"name"`
+	AdminName     string `bson:"adminName" json:"adminName"`
+	AdminPassword string `bson:"adminPassword" json:"adminPassword"`
+	AdminSurname  string `bson:"adminSurname" json:"adminSurname"`
+	AdminEmail    string `bson:"adminEmail" json:"adminEmail"`
+	Address       string `bson:"address" json:"address"`
+	Phone         string `bson:"phone" json:"phone"`
 }

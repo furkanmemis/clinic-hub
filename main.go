@@ -25,7 +25,7 @@ func main() {
 	fmt.Println("Tenant routes:")
 	for route, handleFunc := range handler.TenantHandlerMap {
 		wrapped := middleware.JWTMiddleware(http.HandlerFunc(handleFunc))
-		http.Handle(route, wrapped)
+		http.Handle(route, middleware.EnableCORS(wrapped))
 		fmt.Printf("%s created.\n", route)
 	}
 	fmt.Println("User routes:")

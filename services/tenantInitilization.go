@@ -1,10 +1,10 @@
 package services
 
 import (
-	"context"
-	"fmt"
 	"clinic-hub/database"
 	"clinic-hub/models"
+	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,6 +30,8 @@ func TenantInitilization() {
 			AdminSurname: "memiş",
 			AdminEmail:   "furkan@fuzei.com",
 			UUID:         "fuzei",
+			Address:      "Ertuğrulgazi, Atatürk Caddesi No: 3",
+			Phone:        "02247111121",
 		}
 
 		collection.InsertOne(ctx, newTenant)

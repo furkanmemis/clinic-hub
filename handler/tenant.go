@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"encoding/json"
 	"clinic-hub/controller"
 	"clinic-hub/models"
+	"encoding/json"
 	"net/http"
 )
 
@@ -18,9 +18,7 @@ func CreateTenantHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	password := tenant.AdminPassword
-
-	msg := controller.CreateTenant(tenant.TenantInformation, password)
+	msg := controller.CreateTenant(tenant)
 
 	rsp := map[string]interface{}{
 		"message": "Success",
@@ -31,6 +29,12 @@ func CreateTenantHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetAllTenantHandler(w http.ResponseWriter, r *http.Request) {
+	tenants := controller.GetAllTenant()
+	json.NewEncoder(w).Encode(tenants)
+}
+
 var TenantHandlerMap = map[string]func(http.ResponseWriter, *http.Request){
-	"/tenant/create": CreateTenantHandler,
+	"/tenant/create":  CreateTenantHandler,
+	"/tenant/get-all": GetAllTenantHandler,
 }

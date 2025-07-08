@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func CreateTenant(tenant models.Tenant, password string) string {
+func CreateTenant(tenant models.TenantRequest) string {
 	collection := database.Connection("fuzei", "tenant")
 	collectionTenantUser := database.Connection("fuzei", "tenantuser")
 
@@ -31,19 +32,27 @@ func CreateTenant(tenant models.Tenant, password string) string {
 
 		newUuid := uuid.New().String()
 
-		tenant.UUID = newUuid
+		newTenant := models.Tenant{
+			Name:         tenant.Name,
+			AdminName:    tenant.AdminName,
+			AdminSurname: tenant.AdminSurname,
+			AdminEmail:   tenant.AdminEmail,
+			UUID:         newUuid,
+			Address:      tenant.Address,
+			Phone:        tenant.Phone,
+		}
 
-		_, err := collection.InsertOne(ctx, tenant)
+		_, err := collection.InsertOne(ctx, newTenant)
 		if err != nil {
 			fmt.Println("Tenant creation failed:", err)
 			return "Error: " + err.Error()
 		}
 
-		fmt.Println("Tenant created.")
+		fmt.Println(tenant.Name + " Tenant created.")
 
 		collectionUser := database.Connection(newUuid, "user")
 
-		data := []byte(password)
+		data := []byte(tenant.AdminPassword)
 		hash := sha256.Sum256(data)
 
 		newAdmin := models.User{
@@ -75,4 +84,33 @@ func CreateTenant(tenant models.Tenant, password string) string {
 
 	fmt.Println("Tenant already exists!")
 	return tenant.Name + " already exists!"
+}
+
+func GetAllTenant() []models.Tenant {
+	collection := database.Connection("fuzei", "tenant")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := collection.Find(ctx, bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+
+	var tenants []models.Tenant
+
+	for cursor.Next(ctx) {
+		var tenant models.Tenant
+		if err := cursor.Decode(&tenant); err != nil {
+			log.Fatal(err)
+		}
+		tenants = append(tenants, tenant)
+	}
+
+	if err := cursor.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return tenants
 }
